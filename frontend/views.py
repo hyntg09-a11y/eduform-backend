@@ -65,4 +65,4 @@ def test_view(request):
             preguntas = encuesta_socioeconomica
 
     pregunta_actual = preguntas[index]
-    return render(request, 'test.html', {'pregunta': pregunta_actual, 'step': step,
+    return render(request, 'test.html', {'pregunta': pregunta_actual, 'step': step})
