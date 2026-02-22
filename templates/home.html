@@ -1,0 +1,180 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>EduForm</title>
+  <link rel="stylesheet" href="{% static 'css/eduform.css' %}">
+</head>
+<body>
+<div class="app-container">
+
+  <!-- ========================= HEADER ========================= -->
+  <header class="header bg-neutral py-4 px-6 lg:px-12">
+    <div class="max-w-screen-xl mx-auto flex justify-end items-center">
+      <img src="{% static 'img/logo.jpeg' %}" alt="Eduform Logo" width="60" height="60" />
+    </div>
+  </header>
+
+  <!-- ========================= HERO ========================= -->
+  <section class="bg-neutral py-16 px-6 lg:px-12 hero-section">
+    <div class="max-w-screen-xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
+
+      <div class="space-y-6 left-text">
+        <h1 class="font-headline font-bold text-4xl lg:text-5xl text-primary leading-tight">
+          Descubre tu futuro con EDUFORM
+        </h1>
+        <p class="text-lg text-primary">
+          Plataforma gratuita de orientación vocacional personalizada para estudiantes de Colombia.
+        </p>
+
+        <div class="submenu-container">
+          <button class="btn">Menú Principal</button>
+          <div class="submenu">
+
+            {% if user.is_authenticated %}
+              <form method="POST" action="{% url 'logout' %}" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" style="background:none;border:none;color:#004aad;cursor:pointer;padding:10px 15px;width:100%;text-align:left;">
+                  Cerrar sesión ({{ user.first_name }})
+                </button>
+              </form>
+              <a href="{% url 'test' %}">Test vocacional</a>
+              <a href="{% url 'dashboard' %}">Ver resultados</a>
+            {% else %}
+              <a href="#" onclick="abrirModal('modalLogin')">Iniciar sesión</a>
+              <a href="{% url 'test' %}">Test vocacional</a>
+              <a href="#" onclick="alert('Debes iniciar sesión para ver tus resultados')">Ver resultados</a>
+            {% endif %}
+
+          </div>
+        </div>
+      </div>
+
+      <div class="flex justify-center lg:justify-end">
+        <img src="{% static 'img/imagen1.jpeg' %}" alt="student" width="325" height="200" class="w-150 object-contain"/>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================= CARDS ========================= -->
+  <section class="bg-tertiary py-16 px-6 lg:px-12">
+    <div class="max-w-screen-xl mx-auto grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+      <article class="card-hover bg-primary rounded">
+        <img src="{% static 'img/card1.png' %}" class="card-img" alt="Orientación vocacional"/>
+        <h3 class="font-headline text-xl text-primary-foreground">Orientación Vocacional</h3>
+        <div class="card-description">Identifica tus intereses y habilidades.</div>
+      </article>
+
+      <article class="card-hover bg-primary rounded">
+        <img src="{% static 'img/card2.png' %}" class="card-img" alt="Análisis socioeconómico"/>
+        <h3 class="font-headline text-xl text-primary-foreground">Análisis Socioeconómico</h3>
+        <div class="card-description">Opciones académicas reales según tu contexto.</div>
+      </article>
+
+      <article class="card-hover bg-primary rounded">
+        <img src="{% static 'img/card3.png' %}" class="card-img" alt="Opciones gratuitas"/>
+        <h3 class="font-headline text-xl text-primary-foreground">Opciones Gratuitas</h3>
+        <div class="card-description">Universidades, becas y programas gratuitos.</div>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- ========================= FOOTER ========================= -->
+  <footer class="footer">
+    © {% now "Y" %} EduForm — Todos los derechos reservados.
+  </footer>
+
+  <!-- ========================= MODAL LOGIN ========================= -->
+  <div class="modal-overlay" id="modalLogin" onclick="cerrarModal('modalLogin')">
+    <div class="modal" onclick="event.stopPropagation()">
+      <div class="modal-content">
+        <button class="close-btn" onclick="cerrarModal('modalLogin')">×</button>
+        <h2>Iniciar sesión</h2>
+
+        {% if login_error %}
+          <p style="color:red; text-align:center;">{{ login_error }}</p>
+        {% endif %}
+
+        <form method="POST" action="{% url 'login' %}">
+          {% csrf_token %}
+          <input type="email" name="email" placeholder="Correo electrónico" class="input" required/>
+          <input type="password" name="password" placeholder="Contraseña" class="input" required/>
+          <button type="submit" class="btn-azul" style="margin-top:15px; width:100%; padding:12px; background:#004aad; color:white; border:none; border-radius:6px; cursor:pointer;">
+            Ingresar
+          </button>
+        </form>
+
+        <p style="margin-top:12px; text-align:center;">
+          ¿No tienes cuenta?
+          <a href="#" style="color:#0066ff;" onclick="cerrarModal('modalLogin'); abrirModal('modalRegistro')">
+            Crear cuenta
+          </a>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================= MODAL REGISTRO ========================= -->
+  <div class="modal-overlay" id="modalRegistro" onclick="cerrarModal('modalRegistro')">
+    <div class="modal" onclick="event.stopPropagation()">
+      <div class="modal-content">
+        <button class="close-btn" onclick="cerrarModal('modalRegistro')">×</button>
+        <h2>Crear cuenta</h2>
+
+        {% if registro_error %}
+          <p style="color:red; text-align:center;">{{ registro_error }}</p>
+        {% endif %}
+
+        <form method="POST" action="{% url 'registro' %}">
+          {% csrf_token %}
+          <input type="text" name="nombre" placeholder="Nombre completo" class="input" required/>
+          <input type="email" name="email" placeholder="Correo electrónico" class="input" required/>
+          <input type="password" name="password" placeholder="Contraseña" class="input" required/>
+          <button type="submit" style="margin-top:15px; width:100%; padding:12px; background:#004aad; color:white; border:none; border-radius:6px; cursor:pointer;">
+            Crear Cuenta
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  function abrirModal(id) {
+    document.getElementById(id).classList.add('active');
+    document.getElementById(id).querySelector('.modal').classList.add('active');
+  }
+  function cerrarModal(id) {
+    document.getElementById(id).classList.remove('active');
+    document.getElementById(id).querySelector('.modal').classList.remove('active');
+  }
+
+  // Si Django devuelve error, abre el modal automáticamente
+  {% if login_error %}
+    abrirModal('modalLogin');
+  {% endif %}
+  {% if registro_error %}
+    abrirModal('modalRegistro');
+  {% endif %}
+</script>
+<style>
+  .close-btn {
+    position: absolute !important;
+    top: 10px !important;
+    right: 15px !important;
+    width: auto !important;
+    background: transparent !important;
+    color: #333 !important;
+    font-size: 26px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: none !important;
+  }
+</style>
+</body>
+</html>

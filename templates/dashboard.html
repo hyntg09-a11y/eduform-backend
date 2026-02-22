@@ -1,0 +1,124 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Resultados — EduForm</title>
+  <link rel="stylesheet" href="{% static 'css/eduform.css' %}">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<div class="modal-overlay active">
+  <div class="modal active dashboard-modal" style="position:relative;top:auto;left:auto;transform:none;margin:40px auto;max-height:90vh;overflow-y:auto;">
+    <div class="modal-content">
+
+      <a href="/" class="close-btn" style="text-decoration:none;position:absolute;top:10px;right:15px;font-size:26px;font-weight:bold;color:#333;background:transparent;border:none;cursor:pointer;">×</a>
+
+      <h2 class="dashboard-title">Resultados Vocacionales</h2>
+      <p style="text-align:center;color:#555;margin-bottom:20px;">
+        Hola, <strong>{{ usuario.first_name }}</strong>
+      </p>
+
+      {% if resultado %}
+      <!-- Perfil actual -->
+      <div class="dashboard-card" style="text-align:center;">
+        <h3>Tu perfil recomendado</h3>
+        <p style="font-size:2rem;font-weight:bold;color:#004aad;margin:15px 0;">
+          {{ resultado.perfil }}
+        </p>
+        <p style="font-size:1rem;color:#333;line-height:1.6;">
+          {{ resultado.recomendacion }}
+        </p>
+      </div>
+      {% endif %}
+
+      {% if grafico_labels %}
+      <!-- Gráfico de pastel -->
+      <div class="dashboard-card">
+        <h3>Distribución de perfiles</h3>
+        <canvas id="graficoPastel" height="250"></canvas>
+      </div>
+
+      <!-- Historial -->
+      <div class="dashboard-card">
+        <h3>Historial de resultados</h3>
+        <table class="dashboard-table">
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Perfil</th>
+              <th>Recomendación</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in historial %}
+            <tr>
+              <td>{{ item.fecha|date:"d/m/Y H:i" }}</td>
+              <td><strong>{{ item.perfil }}</strong></td>
+              <td>{{ item.recomendacion }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div style="text-align:center;padding:40px;">
+        <p style="font-size:1.1rem;color:#555;margin-bottom:20px;">
+          Completa el test para ver tu historial y gráficos aquí.
+        </p>
+      </div>
+      {% endif %}
+
+      <!-- Botones -->
+      <div style="display:flex;gap:15px;justify-content:center;margin-top:20px;flex-wrap:wrap;">
+        <a href="{% url 'test' %}" style="background:#004aad;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:bold;">
+          {% if resultado %}Repetir test{% else %}Hacer el test{% endif %}
+        </a>
+        <a href="/" style="background:#6c757d;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:bold;">
+          Volver al inicio
+        </a>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+{% if grafico_labels %}
+<script>
+  const labels = {{ grafico_labels|safe }};
+  const datos = {{ grafico_datos|safe }};
+  const colores = ['#004aad','#ffc107','#28a745','#dc3545','#6f42c1'];
+
+  new Chart(document.getElementById('graficoPastel'), {
+    type: 'pie',
+    data: {
+      labels: labels,
+      datasets: [{
+        data: datos,
+        backgroundColor: colores.slice(0, labels.length),
+        borderWidth: 2,
+        borderColor: '#fff'
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position: 'bottom' },
+        tooltip: {
+          callbacks: {
+            label: function(ctx) {
+              const total = ctx.dataset.data.reduce((a,b) => a+b, 0);
+              const pct = Math.round((ctx.parsed / total) * 100);
+              return ctx.label + ': ' + ctx.parsed + ' vez/veces (' + pct + '%)';
+            }
+          }
+        }
+      }
+    }
+  });
+</script>
+{% endif %}
+
+</body>
+</html>
