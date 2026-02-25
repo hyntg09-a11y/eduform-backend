@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Test Vocacional - Pregunta {{ progreso }}%{% endblock %}
+
+{% block content %}
+<style>
+    .test-container { max-width: 700px; margin: 4rem auto; background: white; padding: 2rem; border-radius: 1rem; box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
+    .progress-container { width: 100%; background-color: #e0e0e0; border-radius: 0.5rem; overflow: hidden; margin-bottom: 2rem; }
+    .progress-bar { height: 1rem; width: {{ progreso }}%; background-color: var(--primary-blue); transition: width 0.3s ease-in-out; text-align: center; color: white; font-weight: bold; }
+    .question-title { font-size: 1.5rem; font-weight: 600; color: var(--text-color); margin-bottom: 1.5rem; }
+    .options-list { list-style: none; padding: 0; }
+    .option-item { margin-bottom: 1rem; }
+    .option-item label { display: block; padding: 1rem; border: 2px solid var(--light-gray); border-radius: 0.5rem; cursor: pointer; transition: all 0.2s; }
+    .option-item input[type="radio"] { display: none; }
+    .option-item input[type="radio"]:checked + label { border-color: var(--secondary-blue); background-color: #eff6ff; font-weight: bold; }
+    .option-item label:hover { border-color: var(--secondary-blue); }
+</style>
+
+<div class="test-container">
+    <!-- Barra de Progreso -->
+    <div class="progress-container">
+        <div class="progress-bar">{{ progreso }}%</div>
+    </div>
+
+    {% if pregunta %}
+        <form method="POST" action="{% url 'test_view' evaluacion.id %}">
+            {% csrf_token %}
+            <input type="hidden" name="pregunta_id" value="{{ pregunta.id }}">
+            
+            <fieldset>
+                <legend class="question-title">{{ pregunta.texto }}</legend>
+                
+                <ul class="options-list">
+                    {% for opcion in pregunta.opciones.all %}
+                        <li class="option-item">
+                            <input type="radio" id="opcion-{{ opcion.id }}" name="opcion_id" value="{{ opcion.id }}" required>
+                            <label for="opcion-{{ opcion.id }}">{{ opcion.texto }}</label>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </fieldset>
+
+            <button type="submit" class="btn btn-primary btn-large mt-4" style="width: 100%;">Siguiente</button>
+        </form>
+    {% else %}
+        <h2 class="question-title">Calculando resultados...</h2>
+        <p>Serás redirigido en un momento.</p>
+    {% endif %}
+</div>
+{% endblock %}

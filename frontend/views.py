@@ -3,9 +3,8 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import ensure_csrf_cookie
-from frontend.encuestas import encuesta_socioeconomica, encuesta_vocacional
-from frontend.motor_recomendacion import generar_recomendacion
-from evaluaciones.models import EvaluacionVocacional, RespuestaEvaluacion, RecomendacionCarrera, Carrera
+from django.http import Http404
+from evaluaciones.models import Pregunta, OpcionRespuesta, Evaluacion, RespuestaUsuario
 
 
 @ensure_csrf_cookie
@@ -39,108 +38,102 @@ def register_view(request):
 
 
 @login_required(login_url='/')
-def test_view(request):
-    step = int(request.POST.get('step', 1))
-    index = int(request.POST.get('index', 0))
-    preguntas = encuesta_socioeconomica if step == 1 else encuesta_vocacional
-    respuestas_previas = {k[5:]: v for k, v in request.POST.items() if k.startswith('prev_')}
+def test_view(request, evaluacion_id=None):
+    # --- Iniciar un nuevo test (si no hay ID) ---
+    if evaluacion_id is None:
+        nueva_evaluacion = Evaluacion.objects.create(usuario=request.user)
+        return redirect('test_view', evaluacion_id=nueva_evaluacion.id)
 
-    if request.method == 'POST' and request.POST.get('accion') == 'siguiente':
-        pregunta_actual = preguntas[index]
-        valor = request.POST.get(f'respuesta_{pregunta_actual["id"]}', '')
+    # --- Cargar la evaluación actual ---
+    try:
+        evaluacion = Evaluacion.objects.get(id=evaluacion_id, usuario=request.user)
+    except Evaluacion.DoesNotExist:
+        raise Http404("Evaluación no encontrada o no pertenece al usuario.")
 
-        if not valor:
-            return render(request, 'test.html', {
-                'pregunta': pregunta_actual,
-                'step': step,
-                'index': index,
-                'total': len(preguntas),
-                'es_ultimo': step == 2 and index == len(preguntas) - 1,
-                'respuestas_previas': respuestas_previas,
-                'error': 'Debes seleccionar una opción'
-            })
+    # --- Procesar respuesta enviada (POST) ---
+    if request.method == 'POST':
+        opcion_id = request.POST.get('opcion_id')
+        pregunta_id = request.POST.get('pregunta_id')
+        
+        if not opcion_id or not pregunta_id:
+            # Idealmente, manejar este error de forma más elegante en el template
+            return redirect('test_view', evaluacion_id=evaluacion.id)
 
-        respuestas_previas[pregunta_actual['id']] = valor
+        try:
+            opcion_seleccionada = OpcionRespuesta.objects.get(id=opcion_id, pregunta_id=pregunta_id)
+            pregunta_actual = Pregunta.objects.get(id=pregunta_id)
+        except (OpcionRespuesta.DoesNotExist, Pregunta.DoesNotExist):
+            raise Http404("La opción o pregunta no es válida.")
 
-        if index < len(preguntas) - 1:
-            index += 1
-        elif step == 1:
-            step = 2
-            index = 0
-            preguntas = encuesta_vocacional
-        else:
-            resultado = generar_recomendacion(respuestas_previas)
+        # Guardar o actualizar la respuesta para esta pregunta en esta evaluación
+        RespuestaUsuario.objects.update_or_create(
+            evaluacion=evaluacion,
+            opcion_seleccionada__pregunta=pregunta_actual,
+            defaults={'opcion_seleccionada': opcion_seleccionada}
+        )
 
-            evaluacion = EvaluacionVocacional.objects.create(
-                idusuario=request.user,
-                puntajetotal=0
-            )
+    # --- Lógica para encontrar la siguiente pregunta ---
+    preguntas_totales = Pregunta.objects.all()
+    preguntas_respondidas_ids = set(
+        evaluacion.respuestas.values_list('opcion_seleccionada__pregunta_id', flat=True)
+    )
 
-            for i, (preg_id, respuesta) in enumerate(respuestas_previas.items()):
-                RespuestaEvaluacion.objects.create(
-                    idevaluacion=evaluacion,
-                    idpregunta=i,
-                    respuesta=f"{preg_id}: {respuesta}"
-                )
+    siguiente_pregunta = None
+    for pregunta in preguntas_totales:
+        if pregunta.id not in preguntas_respondidas_ids:
+            siguiente_pregunta = pregunta
+            break
+    
+    # --- Finalizar el test si no hay más preguntas ---
+    if siguiente_pregunta is None:
+        resultado = evaluacion.calcular_resultado()
+        # Guardamos el resultado en la sesión para mostrarlo inmediatamente en el dashboard
+        if resultado:
+            request.session['resultado_reciente'] = {
+                'perfil': resultado.nombre,
+                'recomendacion': resultado.descripcion
+            }
+        return redirect('dashboard')
 
-            carrera = Carrera.objects.filter(nombrecarrera=resultado['perfil']).first()
-            if carrera:
-                RecomendacionCarrera.objects.create(
-                    idevaluacion=evaluacion,
-                    idcarrera=carrera,
-                    porcentajeafinidad=100,
-                    justificacion=resultado['recomendacion']
-                )
+    # --- Renderizar la siguiente pregunta ---
+    progreso = (len(preguntas_respondidas_ids) / preguntas_totales.count()) * 100 if preguntas_totales.count() > 0 else 0
 
-            request.session['resultado'] = resultado
-            return redirect('dashboard')
-
-    if request.method == 'POST' and request.POST.get('accion') == 'atras':
-        if index > 0:
-            index -= 1
-        elif step == 2:
-            step = 1
-            index = len(encuesta_socioeconomica) - 1
-            preguntas = encuesta_socioeconomica
-
-    pregunta_actual = preguntas[index]
-    return render(request, 'test.html', {
-        'pregunta': pregunta_actual,
-        'step': step,
-        'index': index,
-        'total': len(preguntas),
-        'es_ultimo': step == 2 and index == len(preguntas) - 1,
-        'respuestas_previas': respuestas_previas,
-    })
+    context = {
+        'evaluacion': evaluacion,
+        'pregunta': siguiente_pregunta,
+        'progreso': round(progreso)
+    }
+    return render(request, 'test_dinamico.html', context)
 
 
 @login_required(login_url='/')
 def dashboard_view(request):
-    resultado = request.session.get('resultado', None)
+    # Usamos pop para obtener el resultado y limpiarlo de la sesión, evitando que se muestre en futuras visitas.
+    resultado_reciente = request.session.pop('resultado_reciente', None)
 
-    evaluaciones = EvaluacionVocacional.objects.filter(
-        idusuario=request.user
-    ).order_by('-fecharealizacion')
+    # Obtenemos el historial desde la base de datos, ahora basado en el nuevo modelo Evaluacion
+    evaluaciones_pasadas = Evaluacion.objects.filter(
+        usuario=request.user,
+        perfil_resultado__isnull=False
+    ).select_related('perfil_resultado').order_by('-fecha_creacion')
 
     historial = []
     grafico = {}
 
-    for ev in evaluaciones:
-        rec = RecomendacionCarrera.objects.filter(idevaluacion=ev).first()
-        if rec:
-            perfil = rec.idcarrera.nombrecarrera
-            historial.append({
-                'fecha': ev.fecharealizacion,
-                'perfil': perfil,
-                'recomendacion': rec.justificacion
-            })
-            grafico[perfil] = grafico.get(perfil, 0) + 1
+    for ev in evaluaciones_pasadas:
+        perfil = ev.perfil_resultado
+        historial.append({
+            'fecha': ev.fecha_creacion,
+            'perfil': perfil.nombre,
+            'recomendacion': perfil.descripcion
+        })
+        grafico[perfil.nombre] = grafico.get(perfil.nombre, 0) + 1
 
     grafico_labels = list(grafico.keys())
     grafico_datos = list(grafico.values())
 
     return render(request, 'dashboard.html', {
-        'resultado': resultado,
+        'resultado': resultado_reciente, # El resultado del test que acabamos de hacer
         'usuario': request.user,
         'historial': historial,
         'grafico_labels': grafico_labels,

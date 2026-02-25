@@ -14,6 +14,7 @@ urlpatterns = [
     path('login/', login_view, name='login'),
     path('registro/', register_view, name='registro'),
     path('logout/', logout_view, name='logout'),
-    path('test/', test_view, name='test'),
+    path('test/', test_view, name='test_inicio'), # Inicia un nuevo test
+    path('test/<int:evaluacion_id>/', test_view, name='test_view'), # Continúa un test existente
     path('dashboard/', dashboard_view, name='dashboard'),
 ]
