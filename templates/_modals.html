@@ -1,0 +1,58 @@
+{% load static %}
+
+<!-- ========================= MODAL LOGIN ========================= -->
+<div class="modal-overlay" id="modalLogin" onclick="cerrarModal('modalLogin')">
+    <div class="modal" onclick="event.stopPropagation()">
+        <div class="modal-content">
+            <button class="close-btn" onclick="cerrarModal('modalLogin')">×</button>
+            <h2>Iniciar sesión</h2>
+
+            {% if login_error %}
+                <p class="error-message">{{ login_error }}</p>
+            {% endif %}
+
+            <form method="POST" action="{% url 'login' %}">
+                {% csrf_token %}
+                <input type="email" name="email" placeholder="Correo electrónico" class="input-field" required/>
+                <input type="password" name="password" placeholder="Contraseña" class="input-field" required/>
+                <button type="submit" class="btn btn-primary mt-4">
+                    Ingresar
+                </button>
+            </form>
+
+            <p class="modal-link-text">
+                ¿No tienes cuenta?
+                <a href="#" class="text-secondary" onclick="cerrarModal('modalLogin'); abrirModal('modalRegistro')">
+                    Crear cuenta
+                </a>
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- ========================= MODAL REGISTRO ========================= -->
+<div class="modal-overlay" id="modalRegistro" onclick="cerrarModal('modalRegistro')">
+    <div class="modal" onclick="event.stopPropagation()">
+        <div class="modal-content">
+            <button class="close-btn" onclick="cerrarModal('modalRegistro')">×</button>
+            <h2>Crear cuenta</h2>
+
+            {% if registro_error %}
+                <p class="error-message">{{ registro_error }}</p>
+            {% endif %}
+
+            <form method="POST" action="{% url 'registro' %}">
+                {% csrf_token %}
+                <input type="text" name="nombre" placeholder="Nombre completo" class="input-field" required/>
+                <input type="email" name="email" placeholder="Correo electrónico" class="input-field" required/>
+                <input type="password" name="password" placeholder="Contraseña" class="input-field" required/>
+                <button type="submit" class="btn btn-primary mt-4">
+                    Crear Cuenta
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+{# El JavaScript para abrir/cerrar modales se ha movido a base.html para ser global #}
+{# Los scripts específicos de error de Django se mantienen en home.html #}

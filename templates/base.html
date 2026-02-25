@@ -1,0 +1,49 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}EduForm{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    {# Puedes mantener tu eduform.css si contiene estilos base que no quieres reescribir #}
+    {# <link rel="stylesheet" href="{% static 'css/eduform.css' %}"> #}
+    {% block head_extra %}{% endblock %}
+</head>
+<body>
+    <div class="app-container">
+
+        {# Navbar #}
+        {% include 'includes/_navbar.html' %}
+
+        {# Contenido principal de la página #}
+        <main class="main-content">
+            {% block content %}
+                {# Contenido por defecto o vacío, las plantillas hijas lo sobrescribirán #}
+            {% endblock %}
+        </main>
+
+        {# Footer #}
+        {% include 'includes/_footer.html' %}
+
+        {# Modales (Login/Registro) #}
+        {% include 'includes/_modals.html' %}
+
+    </div>
+
+    {# Scripts JS #}
+    <script>
+        // Funciones JS globales para modales, etc.
+        function abrirModal(id) {
+            document.getElementById(id).classList.add('active');
+            document.getElementById(id).querySelector('.modal').classList.add('active');
+        }
+        function cerrarModal(id) {
+            document.getElementById(id).classList.remove('active');
+            document.getElementById(id).querySelector('.modal').classList.remove('active');
+        }
+    </script>
+    {% block scripts %}{% endblock %}
+
+</body>
+</html>

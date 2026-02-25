@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Inicio del Test Vocacional — EduForm{% endblock %}
+
+{% block content %}
+<section class="test-intro-section">
+    <div class="container test-intro-card">
+        <h1 class="headline text-primary text-center mb-4">
+            ¡Bienvenido al Test Vocacional de EduForm!
+        </h1>
+        <p class="text-lg text-text-color text-center mb-6">
+            Este test te ayudará a descubrir tus intereses y aptitudes para guiarte hacia la carrera ideal.
+            Responde con sinceridad para obtener los resultados más precisos.
+        </p>
+
+        <div class="test-intro-features">
+            <div class="feature-item">
+                <span class="icon">💡</span> Identifica tus pasiones
+            </div>
+            <div class="feature-item">
+                <span class="icon">🎯</span> Recibe recomendaciones personalizadas
+            </div>
+            <div class="feature-item">
+                <span class="icon">🚀</span> Da el primer paso hacia tu futuro
+            </div>
+        </div>
+        <a href="{% url 'test' %}" class="btn btn-primary btn-large mt-8">Comenzar Test</a>
+    </div>
+</section>
+{% endblock %}
