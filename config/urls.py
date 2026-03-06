@@ -1,20 +1,24 @@
 from django.contrib import admin
 from django.urls import path
-from django.contrib.auth import logout as auth_logout
-from django.shortcuts import redirect
-from frontend.views import home, login_view, register_view, test_view, dashboard_view
-
-def logout_view(request):
-    auth_logout(request)
-    return redirect('home')
+from django.contrib.auth.views import LogoutView
+from frontend import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', home, name='home'),
-    path('login/', login_view, name='login'),
-    path('registro/', register_view, name='registro'),
-    path('logout/', logout_view, name='logout'),
-    path('test/', test_view, name='test_inicio'), # Inicia un nuevo test
-    path('test/<int:evaluacion_id>/', test_view, name='test_view'), # Continúa un test existente
-    path('dashboard/', dashboard_view, name='dashboard'),
+
+    # Rutas de la App
+    path('', views.home, name='home'),
+    path('inicio/', views.home, name='inicio'), # Asumiendo que inicio es lo mismo que home
+    path('dashboard/', views.dashboard_view, name='dashboard'),
+
+    # --- Rutas del Test Dinámico (CORREGIDAS) ---
+    # 1. Ruta para INICIAR un nuevo test. No necesita ID.
+    path('test/', views.test_view, name='test_start'),
+    # 2. Ruta para CONTINUAR un test existente. Requiere ID.
+    path('test/<int:evaluacion_id>/', views.test_view, name='test_view'),
+
+    # Autenticación
+    path('login/', views.login_view, name='login'),
+    path('register/', views.register_view, name='register'),
+    path('logout/', LogoutView.as_view(next_page='home'), name='logout'),
 ]

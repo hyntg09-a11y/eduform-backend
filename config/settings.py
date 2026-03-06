@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     # tus apps
     "usuarios",
     "evaluaciones",
+    "frontend",
 ]
 
 MIDDLEWARE = [

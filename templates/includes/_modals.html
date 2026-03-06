@@ -41,7 +41,7 @@
                 <p class="error-message">{{ registro_error }}</p>
             {% endif %}
 
-            <form method="POST" action="{% url 'registro' %}">
+            <form method="POST" action="{% url 'register' %}">
                 {% csrf_token %}
                 <input type="text" name="nombre" placeholder="Nombre completo" class="input-field" required/>
                 <input type="email" name="email" placeholder="Correo electrónico" class="input-field" required/>

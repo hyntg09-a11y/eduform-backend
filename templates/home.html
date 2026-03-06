@@ -26,11 +26,11 @@
                   Cerrar sesión ({{ user.first_name }})
                 </button>
               </form>
-              <a href="{% url 'test_inicio' %}" class="dropdown-item">Test vocacional</a>
+              <a href="{% url 'test_start' %}" class="dropdown-item">Test vocacional</a>
               <a href="{% url 'dashboard' %}" class="dropdown-item">Ver resultados</a>
             {% else %}
               <a href="#" onclick="abrirModal('modalLogin')" class="dropdown-item">Iniciar sesión</a>
-              <a href="{% url 'test_inicio' %}" class="dropdown-item">Test vocacional</a>
+              <a href="{% url 'test_start' %}" class="dropdown-item">Test vocacional</a>
               <a href="#" onclick="alert('Debes iniciar sesión para ver tus resultados')" class="dropdown-item">Ver resultados</a>
             {% endif %}
           </div>

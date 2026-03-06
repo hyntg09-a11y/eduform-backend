@@ -4,7 +4,8 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.http import Http404
-from evaluaciones.models import Pregunta, OpcionRespuesta, Evaluacion, RespuestaUsuario
+from evaluaciones.models import Pregunta, OpcionRespuesta, Evaluacion, RespuestaUsuario, PerfilVocacional
+from django.db.models import Count
 
 
 @ensure_csrf_cookie
@@ -39,52 +40,73 @@ def register_view(request):
 
 @login_required(login_url='/')
 def test_view(request, evaluacion_id=None):
-    # --- Iniciar un nuevo test (si no hay ID) ---
+    # --- 1. Lógica para Iniciar o Reanudar un Test ---
     if evaluacion_id is None:
+        # Buscar una evaluación activa (sin resultado) para el usuario.
+        evaluacion_activa = Evaluacion.objects.filter(
+            usuario=request.user,
+            perfil_resultado__isnull=True
+        ).order_by('-fecha_creacion').first()
+
+        if evaluacion_activa:
+            # Si existe una evaluación en curso, redirigir a ella.
+            return redirect('test_view', evaluacion_id=evaluacion_activa.id)
+        
+        # Si no hay ninguna activa, crear una nueva.
         nueva_evaluacion = Evaluacion.objects.create(usuario=request.user)
         return redirect('test_view', evaluacion_id=nueva_evaluacion.id)
 
-    # --- Cargar la evaluación actual ---
+    # --- 2. Cargar la evaluación actual ---
     try:
         evaluacion = Evaluacion.objects.get(id=evaluacion_id, usuario=request.user)
     except Evaluacion.DoesNotExist:
         raise Http404("Evaluación no encontrada o no pertenece al usuario.")
 
-    # --- Procesar respuesta enviada (POST) ---
+    # --- 3. Procesar respuesta enviada (POST) ---
     if request.method == 'POST':
         opcion_id = request.POST.get('opcion_id')
         pregunta_id = request.POST.get('pregunta_id')
         
-        if not opcion_id or not pregunta_id:
-            # Idealmente, manejar este error de forma más elegante en el template
-            return redirect('test_view', evaluacion_id=evaluacion.id)
+        if opcion_id and pregunta_id:
+            try:
+                opcion_seleccionada = OpcionRespuesta.objects.get(idopcion=opcion_id, idpregunta_id=pregunta_id)
+                
+                # Borrar respuesta anterior si existe (para evitar duplicados si el usuario retrocede)
+                RespuestaUsuario.objects.filter(
+                    evaluacion=evaluacion,
+                    opcion_seleccionada__idpregunta_id=pregunta_id
+                ).delete()
+                
+                # Guardar nueva respuesta
+                RespuestaUsuario.objects.create(evaluacion=evaluacion, opcion_seleccionada=opcion_seleccionada)
+                
+                # Patrón PRG (Post-Redirect-Get): Redirigir para evitar reenvío de formulario
+                return redirect('test_view', evaluacion_id=evaluacion.id)
+                
+            except (OpcionRespuesta.DoesNotExist, Pregunta.DoesNotExist):
+                pass # Ignorar datos inválidos o manejar error
+        
+        # Si falla algo, redirigir al mismo punto
+        return redirect('test_view', evaluacion_id=evaluacion.id)
 
-        try:
-            opcion_seleccionada = OpcionRespuesta.objects.get(id=opcion_id, pregunta_id=pregunta_id)
-            pregunta_actual = Pregunta.objects.get(id=pregunta_id)
-        except (OpcionRespuesta.DoesNotExist, Pregunta.DoesNotExist):
-            raise Http404("La opción o pregunta no es válida.")
+    # --- 4. Lógica para encontrar la siguiente pregunta (ROBUSTA Y OPTIMIZADA) ---
+    # Define un queryset base de preguntas válidas (con al menos una opción) para reutilizar.
+    preguntas_validas_qs = Pregunta.objects.annotate(
+        num_opciones=Count('opciones')
+    ).filter(num_opciones__gt=0)
 
-        # Guardar o actualizar la respuesta para esta pregunta en esta evaluación
-        RespuestaUsuario.objects.update_or_create(
-            evaluacion=evaluacion,
-            opcion_seleccionada__pregunta=pregunta_actual,
-            defaults={'opcion_seleccionada': opcion_seleccionada}
-        )
-
-    # --- Lógica para encontrar la siguiente pregunta ---
-    preguntas_totales = Pregunta.objects.all()
-    preguntas_respondidas_ids = set(
-        evaluacion.respuestas.values_list('opcion_seleccionada__pregunta_id', flat=True)
+    # Obtiene los IDs de las preguntas ya respondidas para esta evaluación.
+    preguntas_respondidas_ids = list(
+        evaluacion.respuestas.values_list('opcion_seleccionada__idpregunta_id', flat=True)
     )
 
-    siguiente_pregunta = None
-    for pregunta in preguntas_totales:
-        if pregunta.id not in preguntas_respondidas_ids:
-            siguiente_pregunta = pregunta
-            break
-    
-    # --- Finalizar el test si no hay más preguntas ---
+    # Busca la siguiente pregunta válida y no respondida.
+    # prefetch_related('opciones') evita una consulta extra en la plantilla (N+1 problem).
+    siguiente_pregunta = preguntas_validas_qs.exclude(
+        idpregunta__in=preguntas_respondidas_ids
+    ).order_by('idpregunta').prefetch_related('opciones').first()
+
+    # --- 5. Finalizar el test si no hay más preguntas ---
     if siguiente_pregunta is None:
         resultado = evaluacion.calcular_resultado()
         # Guardamos el resultado en la sesión para mostrarlo inmediatamente en el dashboard
@@ -95,13 +117,18 @@ def test_view(request, evaluacion_id=None):
             }
         return redirect('dashboard')
 
-    # --- Renderizar la siguiente pregunta ---
-    progreso = (len(preguntas_respondidas_ids) / preguntas_totales.count()) * 100 if preguntas_totales.count() > 0 else 0
+    # --- 6. Renderizar la siguiente pregunta ---
+    # El total de preguntas ahora se basa en las preguntas válidas para un progreso preciso.
+    total_preguntas = preguntas_validas_qs.count()
+    pregunta_actual_num = len(preguntas_respondidas_ids) + 1
+    progreso = ((pregunta_actual_num - 1) / total_preguntas) * 100 if total_preguntas > 0 else 0
 
     context = {
         'evaluacion': evaluacion,
         'pregunta': siguiente_pregunta,
-        'progreso': round(progreso)
+        'progreso': round(progreso),
+        'pregunta_actual_num': pregunta_actual_num,
+        'total_preguntas': total_preguntas
     }
     return render(request, 'test_dinamico.html', context)
 

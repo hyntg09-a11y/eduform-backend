@@ -1,0 +1,352 @@
+[
+  {
+    "model": "evaluaciones.pregunta",
+    "pk": 1,
+    "fields": {
+      "texto": "Diseñar programas de computación y explorar nuevas aplicaciones tecnológicas para uso del internet."
+    }
+  },
+  {
+    "model": "evaluaciones.pregunta",
+    "pk": 2,
+    "fields": {
+      "texto": "Criar, cuidar y tratar animales domésticos y de campo."
+    }
+  },
+  {
+    "model": "evaluaciones.pregunta",
+    "pk": 3,
+    "fields": {
+      "texto": "Investigar sobre áreas verdes, medioambiente y cambios climáticos."
+    }
+  },
+  {
+    "model": "evaluaciones.pregunta",
+    "pk": 4,
+    "fields": {
+      "texto": "Ilustrar, dibujar y animar digitalmente. Diseñar logotipos."
+    }
+  },
+  {
+    "model": "evaluaciones.pregunta",
+    "pk": 5,
+    "fields": {
+      "texto": "Seleccionar, capacitar y motivar al personal de una organización o empresa."
+    }
+  },
+  {
+    "model": "evaluaciones.pregunta",
+    "pk": 6,
+    "fields": {
+      "texto": "Realizar excavaciones para descubrir restos del pasado."
+    }
+  },
+  {
+    "model": "evaluaciones.pregunta",
+    "pk": 7,
+    "fields": {
+      "texto": "Resolver problemas de cálculo para construir un puente."
+    }
+  },
+  {
+    "model": "evaluaciones.pregunta",
+    "pk": 8,
+    "fields": {
+      "texto": "Tocar un instrumento y componer música."
+    }
+  },
+  {
+    "model": "evaluaciones.pregunta",
+    "pk": 9,
+    "fields": {
+      "texto": "Planificar cuáles son las metas de una organización pública o privada a mediano y largo plazo."
+    }
+  },
+  {
+    "model": "evaluaciones.pregunta",
+    "pk": 10,
+    "fields": {
+      "texto": "Atender la salud de personas enfermas."
+    }
+  },
+  {
+    "model": "evaluaciones.pregunta",
+    "pk": 11,
+    "fields": {
+      "texto": "Controlar ingresos y egresos de fondos y presentar el balance final de una institución."
+    }
+  },
+  {
+    "model": "evaluaciones.pregunta",
+    "pk": 12,
+    "fields": {
+      "texto": "Concebir planos para viviendas, edificios y ciudadelas."
+    }
+  },
+  {
+    "model": "evaluaciones.pregunta",
+    "pk": 13,
+    "fields": {
+      "texto": "Investigar y probar nuevos productos farmacéuticos."
+    }
+  },
+  {
+    "model": "evaluaciones.pregunta",
+    "pk": 14,
+    "fields": {
+      "texto": "Hacer propuestas y formular estrategias para aprovechar las relaciones económicas entre dos países."
+    }
+  },
+  {
+    "model": "evaluaciones.pregunta",
+    "pk": 15,
+    "fields": {
+      "texto": "Pintar, hacer esculturas, ilustrar libros de arte, etcétera. Restaurar piezas y obras de arte."
+    }
+  },
+  {
+    "model": "evaluaciones.pregunta",
+    "pk": 16,
+    "fields": {
+      "texto": "Elaborar campañas para introducir un nuevo producto al mercado. Investigar o sondear nuevos mercados."
+    }
+  },
+  {
+    "model": "evaluaciones.pregunta",
+    "pk": 17,
+    "fields": {
+      "texto": "Examinar y tratar los problemas visuales."
+    }
+  },
+  {
+    "model": "evaluaciones.pregunta",
+    "pk": 18,
+    "fields": {
+      "texto": "Diseñar máquinas que puedan simular actividades humanas."
+    }
+  },
+  {
+    "model": "evaluaciones.pregunta",
+    "pk": 19,
+    "fields": {
+      "texto": "Investigar las causas y efectos de los trastornos emocionales. Tratar a niños, jóvenes y adultos con problemas psicológicos."
+    }
+  },
+  {
+    "model": "evaluaciones.pregunta",
+    "pk": 20,
+    "fields": {
+      "texto": "Atender y realizar ejercicios a personas que tienen limitaciones físicas, problemas de lenguaje, etc."
+    }
+  },
+  {
+    "model": "evaluaciones.pregunta",
+    "pk": 21,
+    "fields": {
+      "texto": "Elaborar mapas, planos e imágenes para el estudio y análisis de datos geográficos."
+    }
+  },
+  {
+    "model": "evaluaciones.pregunta",
+    "pk": 22,
+    "fields": {
+      "texto": "Diseñar juegos interactivos electrónicos para computadora."
+    }
+  },
+  {
+    "model": "evaluaciones.pregunta",
+    "pk": 23,
+    "fields": {
+      "texto": "Realizar el control de calidad de los alimentos."
+    }
+  },
+  {
+    "model": "evaluaciones.pregunta",
+    "pk": 24,
+    "fields": {
+      "texto": "Gestionar y evaluar convenios internacionales de cooperación para el desarrollo social."
+    }
+  },
+  {
+    "model": "evaluaciones.pregunta",
+    "pk": 25,
+    "fields": {
+      "texto": "Crear campañas publicitarias. Redactar guiones y libretos para un programa de televisión."
+    }
+  },
+  {
+    "model": "evaluaciones.pregunta",
+    "pk": 26,
+    "fields": {
+      "texto": "Dedicarse a fabricar productos alimenticios de consumo masivo."
+    }
+  },
+  {
+    "model": "evaluaciones.pregunta",
+    "pk": 27,
+    "fields": {
+      "texto": "Gestionar y evaluar proyectos de desarrollo en una institución educativa y/o fundación."
+    }
+  },
+  {
+    "model": "evaluaciones.pregunta",
+    "pk": 28,
+    "fields": {
+      "texto": "Rediseñar y decorar espacios físicos en viviendas, oficinas y locales comerciales."
+    }
+  },
+  {
+    "model": "evaluaciones.pregunta",
+    "pk": 29,
+    "fields": {
+      "texto": "Administrar una empresa de turismo o agencias de viaje."
+    }
+  },
+  {
+    "model": "evaluaciones.pregunta",
+    "pk": 30,
+    "fields": {
+      "texto": "Diseñar ropa para niños, jóvenes y adultos."
+    }
+  },
+  {
+    "model": "evaluaciones.pregunta",
+    "pk": 31,
+    "fields": {
+      "texto": "Investigar organismos vivos para elaborar vacunas."
+    }
+  },
+  {
+    "model": "evaluaciones.pregunta",
+    "pk": 32,
+    "fields": {
+      "texto": "Estudiar idiomas extranjeros —actuales y antiguos— para hacer traducción."
+    }
+  },
+  {
+    "model": "evaluaciones.pregunta",
+    "pk": 33,
+    "fields": {
+      "texto": "Enseñar a niños de cero a cinco años."
+    }
+  },
+  {
+    "model": "evaluaciones.pregunta",
+    "pk": 34,
+    "fields": {
+      "texto": "Atender la salud dental de las personas."
+    }
+  },
+  {
+    "model": "evaluaciones.pregunta",
+    "pk": 35,
+    "fields": {
+      "texto": "Crear estrategias de promoción y venta de nuevos productos nacionales en el mercado internacional."
+    }
+  },
+  {
+    "model": "evaluaciones.pregunta",
+    "pk": 36,
+    "fields": {
+      "texto": "Planificar y recomendar dietas para personas diabéticas o con sobrepeso."
+    }
+  },
+  {
+    "model": "evaluaciones.pregunta",
+    "pk": 37,
+    "fields": {
+      "texto": "Administrar una empresa."
+    }
+  },
+  {
+    "model": "evaluaciones.pregunta",
+    "pk": 38,
+    "fields": {
+      "texto": "Ejecutar proyectos de extracción minera y metalúrgica."
+    }
+  },
+  {
+    "model": "evaluaciones.pregunta",
+    "pk": 39,
+    "fields": {
+      "texto": "Asistir a directivos de multinacionales con manejo de varios idiomas."
+    }
+  },
+  {
+    "model": "evaluaciones.pregunta",
+    "pk": 40,
+    "fields": {
+      "texto": "Diseñar programas educativos para niños con discapacidad."
+    }
+  },
+  {
+    "model": "evaluaciones.pregunta",
+    "pk": 41,
+    "fields": {
+      "texto": "Aplicar conocimientos de estadística en investigaciones en diversas áreas (social, administrativa, salud, etcétera)."
+    }
+  },
+  {
+    "model": "evaluaciones.pregunta",
+    "pk": 42,
+    "fields": {
+      "texto": "Fotografiar hechos históricos, lugares significativos, rostros, paisajes para el área publicitaria, artística, periodística y social."
+    }
+  },
+  {
+    "model": "evaluaciones.pregunta",
+    "pk": 43,
+    "fields": {
+      "texto": "Trabajar en museos y bibliotecas nacionales e internacionales."
+    }
+  },
+  {
+    "model": "evaluaciones.pregunta",
+    "pk": 44,
+    "fields": {
+      "texto": "Ser parte de un grupo de teatro. Trabajar como presentador de televisión, locutor de radio y televisión, animador de programas culturales y concursos."
+    }
+  },
+  {
+    "model": "evaluaciones.pregunta",
+    "pk": 45,
+    "fields": {
+      "texto": "Producir cortometrajes, spots publicitarios, programas educativos, de ficción, etc."
+    }
+  },
+  {
+    "model": "evaluaciones.pregunta",
+    "pk": 46,
+    "fields": {
+      "texto": "Estudiar la influencia entre las corrientes marinas y el clima y sus consecuencias ecológicas."
+    }
+  },
+  {
+    "model": "evaluaciones.pregunta",
+    "pk": 47,
+    "fields": {
+      "texto": "Asesorar a inversionistas en la compra de bienes y acciones en mercados nacionales e internacionales."
+    }
+  },
+  {
+    "model": "evaluaciones.pregunta",
+    "pk": 48,
+    "fields": {
+      "texto": "Estudiar grupos étnicos, sus costumbres, tradiciones, cultura y compartir sus vivencias. Estudiar la diversidad cultural en el ámbito rural y urbano."
+    }
+  },
+  {
+    "model": "evaluaciones.pregunta",
+    "pk": 49,
+    "fields": {
+      "texto": "Explorar el espacio sideral, los planetas, características y componentes."
+    }
+  },
+  {
+    "model": "evaluaciones.pregunta",
+    "pk": 50,
+    "fields": {
+      "texto": "Diseñar y ejecutar programas de turismo."
+    }
+  }
+]

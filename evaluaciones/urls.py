@@ -1,15 +1,11 @@
 """
-evaluaciones/urls.py — Equivalente a dashboard.routes.js + evaluacion.routes.js
+evaluaciones/urls.py
 
-Express:                                  Django:
-router.get('/dashboard/:idusuario')   →   path('dashboard/<int:idusuario>/', get_dashboard)
-router.post('/evaluacion/finalizar')  →   path('evaluacion/finalizar/', finalizar_evaluacion)
+Estas rutas apuntaban a las vistas de API en `evaluaciones/views.py`.
+Como esas vistas han sido eliminadas por ser redundantes (la lógica principal
+se encuentra en `frontend/views.py`), estas rutas ya no son necesarias.
 """
 
-from django.urls import path
-from . import views
-
 urlpatterns = [
-    path('dashboard/<int:idusuario>/', views.get_dashboard, name='dashboard'),
-    path('evaluacion/finalizar/', views.finalizar_evaluacion, name='finalizar_evaluacion'),
+    # Las rutas de la API que estaban aquí han sido eliminadas.
 ]
