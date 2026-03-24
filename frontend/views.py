@@ -45,7 +45,7 @@ def test_view(request, evaluacion_id=None):
         # Buscar una evaluación activa (sin resultado) para el usuario.
         evaluacion_activa = Evaluacion.objects.filter(
             usuario=request.user,
-            perfil_resultado__isnull=True
+            perfil_resultado__isnull=False
         ).order_by('-fecha_creacion').first()
 
         if evaluacion_activa:

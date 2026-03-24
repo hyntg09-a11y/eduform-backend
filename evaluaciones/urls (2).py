@@ -12,4 +12,5 @@ from . import views
 urlpatterns = [
     path('dashboard/<int:idusuario>/', views.get_dashboard, name='dashboard'),
     path('evaluacion/finalizar/', views.finalizar_evaluacion, name='finalizar_evaluacion'),
+    path('dashboard/', views.dashboard_view, name='dashboard'),
 ]
